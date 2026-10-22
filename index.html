@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Flashcards</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif;
+            background-color: #f0f8ff;
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            height: 100vh;
+            width: 100vw;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            padding-bottom: 120px;
+        }
+
+        .slide.active {
+            display: flex;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Стили для ваших картинок */
+        .slide img {
+            max-width: 90vw;
+            max-height: 55vh;
+            object-fit: contain; /* Картинка не обрежется, впишется целиком */
+            border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            cursor: pointer;
+            border: 5px solid white;
+            background-color: white;
+            transition: transform 0.2s;
+        }
+
+        .slide img:active {
+            transform: scale(0.97);
+        }
+
+        .word-container {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+
+        .slide h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            color: #118ab2;
+            text-transform: capitalize;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .speaker-icon {
+            font-size: clamp(2rem, 5vw, 4rem);
+            color: #ef476f;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .nav-controls {
+            position: fixed;
+            bottom: 30px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            pointer-events: none;
+        }
+
+        .nav-btn {
+            pointer-events: auto;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            font-size: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .nav-btn:active {
+            transform: scale(0.9);
+            background-color: #e63946;
+        }
+
+        @media (max-width: 600px) {
+            .nav-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 2rem;
+            }
+            .nav-controls {
+                bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Слайд 1: Cupboard -->
+    <div class="slide active">
+        <!-- ВАША КАРТИНКА ЗДЕСЬ. Если формат png, напишите cupboard.png -->
+        <img src="cupboard.jpg" alt="Cupboard" onclick="speakWord('Cupboard')">
+        <div class="word-container" onclick="speakWord('Cupboard')">
+            <h1>Cupboard</h1>
+            <span class="speaker-icon">🔊</span>
+        </div>
+    </div>
+
+    <!-- Слайд 2: Bus -->
+    <div class="slide">
+        <img src="bus.jpg" alt="Bus" onclick="speakWord('Bus')">
+        <div class="word-container" onclick="speakWord('Bus')">
+            <h1>Bus</h1>
+            <span class="speaker-icon">🔊</span>
+        </div>
+    </div>
+
+    <!-- Слайд 3: Table -->
+    <div class="slide">
+        <img src="table.jpg" alt="Table" onclick="speakWord('Table')">
+        <div class="word-container" onclick="speakWord('Table')">
+            <h1>Table</h1>
+            <span class="speaker-icon">🔊</span>
+        </div>
+    </div>
+
+    <!-- Слайд 4: Bag -->
+    <div class="slide">
+        <img src="bag.jpg" alt="Bag" onclick="speakWord('Bag')">
+        <div class="word-container" onclick="speakWord('Bag')">
+            <h1>Bag</h1>
+            <span class="speaker-icon">🔊</span>
+        </div>
+    </div>
+
+    <!-- Слайд 5: Chair -->
+    <div class="slide">
+        <img src="chair.jpg" alt="Chair" onclick="speakWord('Chair')">
+        <div class="word-container" onclick="speakWord('Chair')">
+            <h1>Chair</h1>
+            <span class="speaker-icon">🔊</span>
+        </div>
+    </div>
+
+    <!-- Кнопки навигации -->
+    <div class="nav-controls">
+        <button class="nav-btn" onclick="changeSlide(-1)">&#10094;</button>
+        <button class="nav-btn" onclick="changeSlide(1)">&#10095;</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+
+        function changeSlide(direction) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + direction + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+
+        function speakWord(word) {
+            window.speechSynthesis.cancel(); // Останавливаем предыдущий звук
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US'; // Английский язык
+            utterance.rate = 0.8;     // Медленная скорость
+            utterance.pitch = 1.1;    // Дружелюбный тон
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Управление стрелками на клавиатуре
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "ArrowRight") changeSlide(1);
+            if (event.key === "ArrowLeft") changeSlide(-1);
+        });
+    </script>
+</body>
+</html>
